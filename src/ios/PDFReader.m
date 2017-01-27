@@ -36,9 +36,9 @@
     NSString* textColor = [command.arguments objectAtIndex:11];
     BOOL enableShare = [[command.arguments objectAtIndex:12]  isEqual: [NSNumber numberWithInt:1]];
     NSInteger pageNumber = [[command.arguments objectAtIndex:13] intValue];
-    
+
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    
+
     ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath password:password];
 
     if (pageNumber > 1) {
@@ -55,38 +55,44 @@
     readerConstants.landscapeDoublePage = landscapeDoublePage;
     readerConstants.landscapeSingleFirstPage = landscapeSingleFirstPage;
     readerConstants.enableShare = enableShare;
-    
+
     ReaderColors *readerColors = [ReaderColors sharedReaderColors];
 
     if ((NSNull *)toolbarBackgroundColor != [NSNull null] && [[ReaderConstants sharedReaderConstants] flatUI]) {
         readerColors.toolbarBackgroundColor = @[[PDFReader colorFromHexString:toolbarBackgroundColor]];
     }
-    
+
     if ((NSNull *)textColor != [NSNull null]) {
         readerColors.textColor = [PDFReader colorFromHexString:textColor];
     }
-    
+
     [self.commandDelegate runInBackground:^{
-        CDVPluginResult *pluginResult;
-        if ([fileManager fileExistsAtPath:filePath]){
-            
-            if (document != nil) // Must have a valid ReaderDocument object in order to proceed with things
-            {
-                self.readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
-                
-                self.readerViewController.delegate = self; // Set the ReaderViewController delegate to self
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.viewController presentViewController:readerViewController animated:YES completion:nil];
-                });
-            }
-            else // Log an error so that we know that something went wrong
-            {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"filepath error"];
-            }
-        } else {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"filepath error"];
-        }
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+      CDVPluginResult *pluginResult;
+      if ([fileManager fileExistsAtPath:filePath]){
+
+          if (document != nil) // Must have a valid ReaderDocument object in order to proceed with things
+          {
+              self.readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
+
+              self.readerViewController.delegate = self; // Set the ReaderViewController delegate to self
+              dispatch_async(dispatch_get_main_queue(), ^{
+                  __weak PDFReader *weakSelf = self;
+                  [self.viewController presentViewController:readerViewController animated:YES completion:^{
+                      CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Player opened"];
+                      [weakSelf.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+
+                  }];
+              });
+          }
+          else // Log an error so that we know that something went wrong
+          {
+              pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"filepath error"];
+              [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+          }
+      } else {
+          pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"filepath error"];
+          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+      }
     }];
 }
 
