@@ -1,0 +1,34 @@
+{
+  "name": "com.lesfrancschatons.cordova.plugins.pdfreader",
+  "version": "1.0.0",
+  "description": "Cordova PDF reader for IOS (based on Reader http://www.vfr.org/)",
+  "cordova": {
+    "id": "com.lesfrancschatons.cordova.plugins.pdfreader",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inflight-Audio-Ltd/Cordova-PDFReader-IOS.git"
+  },
+  "keywords": [
+    "reader",
+    "pdf",
+    "ios",
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Inflight-Audio-Ltd/Cordova-PDFReader-IOS/issues"
+  },
+  "homepage": "https://github.com/Inflight-Audio-Ltd/Cordova-PDFReader-IOS#readme"
+}
